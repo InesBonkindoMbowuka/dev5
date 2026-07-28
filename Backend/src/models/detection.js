@@ -1,0 +1,4 @@
+pedestrianId
+streetlightId
+timestamp
+location
