@@ -1,0 +1,4 @@
+uid
+position
+range
+active
