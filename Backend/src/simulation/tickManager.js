@@ -1,6 +1,7 @@
 const simulationState = require("./simulationState");
 const movementEngine = require("./movementEngine");
 const detectionEngine = require("./detectionEngine");
+const coverageEngine = require("./coverageEngine");
 
 class TickManager {
 
@@ -18,6 +19,7 @@ class TickManager {
             simulationState.currentTick++;
             await movementEngine.movePedestrians();
             await detectionEngine.checkDetections();
+            await coverageEngine.calculateCoverage();
 
             console.log(`Tick ${simulationState.currentTick}`);
 
