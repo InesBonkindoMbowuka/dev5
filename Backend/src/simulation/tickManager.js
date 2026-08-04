@@ -20,10 +20,10 @@ class TickManager {
 		simulationState.interval = setInterval(async () => {
 			simulationState.currentTick++;
 			await movementEngine.movePedestrians();
-			await detectionEngine.checkDetections();
+			const detectionsCreated = await detectionEngine.checkDetections();
 			const coverage = await coverageEngine.calculateCoverage();
 
-			await snapshotService.saveSnapshot(simulationState.currentTick, coverage);
+			await snapshotService.saveSnapshot(simulationState.currentTick, coverage, detectionsCreated);
 
 			console.log(`Tick ${simulationState.currentTick}`);
 		}, 1000);

@@ -2,6 +2,7 @@ const Pedestrian = require("../models/Pedestrian");
 const Streetlight = require("../models/Streetlight");
 const Detection = require("../models/Detection");
 const detectionState = require("./detectionState");
+const simulationState = require("./simulationState");
 
 class DetectionEngine {
 	async checkDetections() {
@@ -23,6 +24,7 @@ class DetectionEngine {
 						await Detection.create({
 							pedestrianUid: pedestrian.uid,
 							streetlightUid: streetlight.uid,
+                            tick: simulationState.currentTick,
 							position: {
 								x: pedestrian.position.x,
 								y: pedestrian.position.y,
@@ -39,6 +41,7 @@ class DetectionEngine {
 		}
 
 		console.log(`Created ${detections} detections`);
+        return detections;
 	}
 }
 

@@ -2,42 +2,30 @@ const SimulationSnapshot = require("../models/SimulationSnapshot");
 const Pedestrian = require("../models/Pedestrian");
 const Detection = require("../models/Detection");
 
-
 class SnapshotService {
+	async saveSnapshot(tick, coverage, detectionsCreated) {
+		const pedestrianCount = await Pedestrian.countDocuments();
 
+		const totalDetectionCount = await Detection.countDocuments();
 
-    async saveSnapshot(tick, coverage) {
+		const snapshot = new SimulationSnapshot({
+			tick,
 
-        const pedestrianCount = await Pedestrian.countDocuments();
+			pedestrianCount,
 
-        const detectionCount = await Detection.countDocuments();
+			detectionCount: detectionsCreated,
 
+			totalDetectionCount,
 
-        const snapshot = new SimulationSnapshot({
+			coveragePercentage: coverage.coveragePercentage,
 
-            tick,
+			blindSpotPercentage: coverage.blindSpotPercentage,
+		});
 
-            pedestrianCount,
+		await snapshot.save();
 
-            detectionCount,
-
-            coveragePercentage: coverage.coveragePercentage,
-
-            blindSpotPercentage: coverage.blindSpotPercentage
-
-        });
-
-
-        await snapshot.save();
-
-
-        console.log(
-            `Snapshot saved for tick ${tick}`
-        );
-
-    }
-
+		console.log(`Snapshot saved for tick ${tick}`);
+	}
 }
-
 
 module.exports = new SnapshotService();

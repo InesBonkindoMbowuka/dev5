@@ -1,17 +1,32 @@
 const SimulationSnapshot = require("../models/SimulationSnapshot");
 
-
 class SnapshotController {
+	async getAll(req, res) {
+		try {
+			const snapshots = await SimulationSnapshot.find().sort({
+				tick: 1,
+			});
 
-    async getAll(req, res) {
+			res.json(snapshots);
+		} catch (error) {
+			res.status(500).json({
+				error: error.message,
+			});
+		}
+	}
+
+    async getLatest(req, res) {
 
         try {
 
-            const snapshots = await SimulationSnapshot.find();
+            const snapshot = await SimulationSnapshot.findOne()
+                .sort({
+                    tick: -1
+                });
 
-            res.json(snapshots);
+            res.json(snapshot);
 
-        } catch (error) {
+        } catch(error) {
 
             res.status(500).json({
                 error: error.message
@@ -20,8 +35,6 @@ class SnapshotController {
         }
 
     }
-
 }
-
 
 module.exports = new SnapshotController();

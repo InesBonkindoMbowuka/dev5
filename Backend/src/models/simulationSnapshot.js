@@ -16,6 +16,11 @@ const simulationSnapshotSchema = new mongoose.Schema({
 		required: true,
 	},
 
+	totalDetectionCount: {
+		type: Number,
+		default: 0,
+	},
+
 	coveragePercentage: {
 		type: Number,
 		required: true,
