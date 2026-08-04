@@ -1,10 +1,10 @@
 class CircularMovement {
 
-    move(position) {
+    move(position, speed) {
 
         return {
             x: position.x,
-            y: position.y + 1
+            y: position.y + speed
         };
 
     }

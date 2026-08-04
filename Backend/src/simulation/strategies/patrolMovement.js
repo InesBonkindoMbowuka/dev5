@@ -1,9 +1,9 @@
 class PatrolMovement {
 
-    move(position) {
+    move(position, speed) {
 
         return {
-            x: position.x + 1,
+            x: position.x + speed,
             y: position.y
         };
 

@@ -1,10 +1,10 @@
 class RandomMovement {
 
-    move(position) {
+    move(position, speed) {
 
         return {
-            x: position.x + (Math.floor(Math.random() * 3) - 1),
-            y: position.y + (Math.floor(Math.random() * 3) - 1)
+            x: position.x + (Math.floor(Math.random() * 3) - 1 * speed),
+            y: position.y + (Math.floor(Math.random() * 3) - 1 * speed)
         };
 
     }
