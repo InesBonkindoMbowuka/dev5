@@ -4,6 +4,7 @@ const detectionEngine = require("./detectionEngine");
 const coverageEngine = require("./coverageEngine");
 const pedestrianSpawner = require("./pedestrianSpawner");
 const snapshotService = require("./snapshotService");
+const streetlightSpawner = require("./streetlightSpawner");
 
 class TickManager {
 	async start() {
@@ -12,6 +13,7 @@ class TickManager {
 		}
 
 		await pedestrianSpawner.spawnPedestrians();
+        await streetlightSpawner.spawnStreetlights();
 
 		simulationState.running = true;
 		simulationState.startTime = new Date();
