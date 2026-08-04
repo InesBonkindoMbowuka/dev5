@@ -1,5 +1,6 @@
 const tickManager = require("../simulation/tickManager");
 const simulationState = require("../simulation/simulationState");
+const resetService = require("../simulation/resetService");
 
 
 class SimulationController {
@@ -28,13 +29,12 @@ class SimulationController {
     }
 
 
-    reset(req, res) {
+    async reset(req, res) {
 
         tickManager.stop();
 
-        simulationState.currentTick = 0;
-        simulationState.startTime = null;
-        simulationState.running = false;
+        await resetService.reset();
+        
 
         res.json({
             message: "Simulation reset",
