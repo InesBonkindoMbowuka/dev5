@@ -2,17 +2,21 @@ const simulationState = require("./simulationState");
 const movementEngine = require("./movementEngine");
 const detectionEngine = require("./detectionEngine");
 const coverageEngine = require("./coverageEngine");
+const pedestrianSpawner = require("./pedestrianSpawner");
 
 class TickManager {
 
-    start() {
+    async start() {
 
         if (simulationState.running) {
             return;
         }
 
+        await pedestrianSpawner.spawnPedestrians();
+
         simulationState.running = true;
         console.log("Simulation started");
+        console.log("State:", simulationState);
 
         simulationState.interval = setInterval(async () => {
 

@@ -4,9 +4,9 @@ const simulationState = require("../simulation/simulationState");
 
 class SimulationController {
 
-    start(req, res) {
+    async start(req, res) {
 
-        tickManager.start();
+        await tickManager.start();
 
         res.json({
             message: "Simulation started",
