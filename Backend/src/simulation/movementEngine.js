@@ -17,7 +17,7 @@ class MovementEngine {
 		for (const pedestrian of pedestrians) {
 			const oldX = pedestrian.position.x;
 			const oldY = pedestrian.position.y;
-			const strategy = strategies[pedestrian.movementStrategy] || strategies.random;
+			const strategy = strategies[pedestrian.movementStrategy] || strategies.circular;
 
 			const newPosition = strategy.move(pedestrian.position, pedestrian.speed);
 
@@ -32,7 +32,7 @@ class MovementEngine {
 			pedestrian.position.x = newPosition.x;
 			pedestrian.position.y = newPosition.y;
 
-			//const distance = Math.sqrt(Math.pow(pedestrian.position.x - oldX, 2) + Math.pow(pedestrian.position.y - oldY, 2));
+			const distance = Math.sqrt(Math.pow(pedestrian.position.x - oldX, 2) + Math.pow(pedestrian.position.y - oldY, 2));
 
 			pedestrian.totalDistance += distance;
 

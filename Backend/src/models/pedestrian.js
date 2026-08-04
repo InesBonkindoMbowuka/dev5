@@ -32,7 +32,7 @@ const pedestrianSchema = new mongoose.Schema({
 
     movementStrategy: {
         type: String,
-        default: "random"
+        default: "circular"
     },
 
     totalDistance: {
