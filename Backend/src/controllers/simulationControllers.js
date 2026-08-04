@@ -33,6 +33,8 @@ class SimulationController {
         tickManager.stop();
 
         simulationState.currentTick = 0;
+        simulationState.startTime = null;
+        simulationState.running = false;
 
         res.json({
             message: "Simulation reset",
@@ -46,7 +48,9 @@ class SimulationController {
 
         res.json({
             running: simulationState.running,
-            currentTick: simulationState.currentTick
+            currentTick: simulationState.currentTick,
+            startTime: simulationState.startTime,
+            speed: simulationState.speed
         });
 
     }

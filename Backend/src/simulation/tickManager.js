@@ -15,8 +15,8 @@ class TickManager {
         await pedestrianSpawner.spawnPedestrians();
 
         simulationState.running = true;
+        simulationState.startTime = new Date();
         console.log("Simulation started");
-        console.log("State:", simulationState);
 
         simulationState.interval = setInterval(async () => {
 
