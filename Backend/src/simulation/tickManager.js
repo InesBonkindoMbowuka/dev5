@@ -11,6 +11,7 @@ class TickManager {
         }
 
         simulationState.running = true;
+        console.log("Simulation started");
 
         simulationState.interval = setInterval(async () => {
 
@@ -32,6 +33,8 @@ class TickManager {
         simulationState.running = false;
 
         simulationState.interval = null;
+
+        console.log("Simulation ended");
 
     }
 
