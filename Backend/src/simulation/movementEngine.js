@@ -2,6 +2,7 @@ const Pedestrian = require("../models/Pedestrian");
 const RandomMovement = require("./strategies/randomMovement");
 const PatrolMovement = require("./strategies/patrolMovement");
 const CircularMovement = require("./strategies/circularMovement");
+const MAP_SIZE = 100;
 
 const strategies = {
 	random: new RandomMovement(),
@@ -20,11 +21,18 @@ class MovementEngine {
 
 			const newPosition = strategy.move(pedestrian.position, pedestrian.speed);
 
-			pedestrian.position.x = Math.max(0, Math.min(100, newPosition.x));
+			if (newPosition.x < 0 || newPosition.x > MAP_SIZE) {
+				newPosition.x = pedestrian.position.x;
+			}
 
-			pedestrian.position.y = Math.max(0, Math.min(100, newPosition.y));
+			if (newPosition.y < 0 || newPosition.y > MAP_SIZE) {
+				newPosition.y = pedestrian.position.y;
+			}
 
-			const distance = Math.sqrt(Math.pow(pedestrian.position.x - oldX, 2) + Math.pow(pedestrian.position.y - oldY, 2));
+			pedestrian.position.x = newPosition.x;
+			pedestrian.position.y = newPosition.y;
+
+			//const distance = Math.sqrt(Math.pow(pedestrian.position.x - oldX, 2) + Math.pow(pedestrian.position.y - oldY, 2));
 
 			pedestrian.totalDistance += distance;
 
