@@ -1,15 +1,20 @@
 const express = require("express");
-const cors = require("cors");
+
+const pedestrianRoutes = require("./routes/pedestrianRoutes");
+const streetlightRoutes = require("./routes/streetlightRoutes");
+const detectionRoutes = require("./routes/detectionRoutes");
+const simulationRoutes = require("./routes/simulationRoutes");
+
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.json({
-        message: "Streetlight Surveillance API running"
-    });
-});
+
+app.use("/api/pedestrians", pedestrianRoutes);
+app.use("/api/streetlights", streetlightRoutes);
+app.use("/api/detections", detectionRoutes);
+app.use("/api/simulation", simulationRoutes);
+
 
 module.exports = app;
