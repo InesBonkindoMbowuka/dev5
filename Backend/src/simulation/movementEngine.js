@@ -2,6 +2,8 @@ const Pedestrian = require("../models/Pedestrian");
 const RandomMovement = require("./strategies/randomMovement");
 const PatrolMovement = require("./strategies/patrolMovement");
 const CircularMovement = require("./strategies/circularMovement");
+const movementHistoryService = require("./movementHistoryService");
+const simulationState = require("./simulationState");
 const MAP_SIZE = 100;
 
 const strategies = {
@@ -37,6 +39,7 @@ class MovementEngine {
 			pedestrian.totalDistance += distance;
 
 			await pedestrian.save();
+			await movementHistoryService.savePosition(pedestrian, simulationState.currentTick);
 		}
 
 		console.log(`Moved ${pedestrians.length} pedestrians`);

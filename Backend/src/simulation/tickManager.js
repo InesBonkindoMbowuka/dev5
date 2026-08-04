@@ -3,47 +3,41 @@ const movementEngine = require("./movementEngine");
 const detectionEngine = require("./detectionEngine");
 const coverageEngine = require("./coverageEngine");
 const pedestrianSpawner = require("./pedestrianSpawner");
+const snapshotService = require("./snapshotService");
 
 class TickManager {
+	async start() {
+		if (simulationState.running) {
+			return;
+		}
 
-    async start() {
+		await pedestrianSpawner.spawnPedestrians();
 
-        if (simulationState.running) {
-            return;
-        }
+		simulationState.running = true;
+		simulationState.startTime = new Date();
+		console.log("Simulation started");
 
-        await pedestrianSpawner.spawnPedestrians();
+		simulationState.interval = setInterval(async () => {
+			simulationState.currentTick++;
+			await movementEngine.movePedestrians();
+			await detectionEngine.checkDetections();
+			const coverage = await coverageEngine.calculateCoverage();
 
-        simulationState.running = true;
-        simulationState.startTime = new Date();
-        console.log("Simulation started");
+			await snapshotService.saveSnapshot(simulationState.currentTick, coverage);
 
-        simulationState.interval = setInterval(async () => {
+			console.log(`Tick ${simulationState.currentTick}`);
+		}, 1000);
+	}
 
-            simulationState.currentTick++;
-            await movementEngine.movePedestrians();
-            await detectionEngine.checkDetections();
-            await coverageEngine.calculateCoverage();
+	stop() {
+		clearInterval(simulationState.interval);
 
-            console.log(`Tick ${simulationState.currentTick}`);
+		simulationState.running = false;
 
-        }, 1000);
+		simulationState.interval = null;
 
-    }
-
-
-    stop() {
-
-        clearInterval(simulationState.interval);
-
-        simulationState.running = false;
-
-        simulationState.interval = null;
-
-        console.log("Simulation ended");
-
-    }
-
+		console.log("Simulation ended");
+	}
 }
 
 module.exports = new TickManager();
