@@ -26,46 +26,73 @@ onUnmounted(() => {
 
 <template>
   <div class="neighborhood-map">
-    <div class="road road-horizontal road-one"></div>
-    <div class="road road-horizontal road-two"></div>
-    <div class="road road-vertical road-three"></div>
+<div class="coordinate-grid"></div>
 
-    <div class="building building-one"></div>
-    <div class="building building-two"></div>
-    <div class="building building-three"></div>
-    <div class="building building-four"></div>
+<span class="axis-label x-axis-label">X</span>
+<span class="axis-label y-axis-label">Y</span>
 
-    <div class="streetlight light-one">
-      <span class="light"></span>
-    </div>
+<span class="coordinate-label x0">0</span>
+<span class="coordinate-label x25">25</span>
+<span class="coordinate-label x50">50</span>
+<span class="coordinate-label x75">75</span>
+<span class="coordinate-label x100">100</span>
 
-    <div class="streetlight light-two">
-      <span class="light"></span>
-    </div>
+<span class="coordinate-label y0">0</span>
+<span class="coordinate-label y25">25</span>
+<span class="coordinate-label y50">50</span>
+<span class="coordinate-label y75">75</span>
+<span class="coordinate-label y100">100</span>
 
-    <div class="streetlight light-three">
-      <span class="light"></span>
-    </div>
+<div class="road road-horizontal road-one"></div>
+<div class="road road-horizontal road-two"></div>
+<div class="road road-vertical road-three"></div>
 
-    <div class="streetlight light-four">
-      <span class="light"></span>
-    </div>
+<div class="building building-one"></div>
+<div class="building building-two"></div>
+<div class="building building-three"></div>
+<div class="building building-four"></div>
 
-    <div class="streetlight light-five">
-      <span class="light"></span>
-    </div>
+<div class="streetlight light-one">
+  <span class="light"></span>
+</div>
 
-    <div
-      v-for="pedestrian in pedestrians"
-      :key="pedestrian.uid"
-      class="pedestrian"
-      :style="{
-        left: `${pedestrian.position.x}%`,
-        top: `${pedestrian.position.y}%`,
-      }"
-    >
-      •
-    </div>
+<div class="streetlight light-two">
+  <span class="light"></span>
+</div>
+
+<div class="streetlight light-three">
+  <span class="light"></span>
+</div>
+
+<div class="streetlight light-four">
+  <span class="light"></span>
+</div>
+
+<div class="streetlight light-five">
+  <span class="light"></span>
+</div>
+
+<div
+  v-for="pedestrian in pedestrians"
+  :key="pedestrian.uid"
+  class="pedestrian"
+  :style="{
+    left: `${pedestrian.position.x}%`,
+    top: `${100 - pedestrian.position.y}%`,
+  }"
+>
+  <span class="pedestrian-dot"></span>
+
+  <div class="pedestrian-info">
+    <strong>{{ pedestrian.uid }}</strong>
+    <small>
+      X: {{ pedestrian.position.x.toFixed(1) }}
+      Y: {{ pedestrian.position.y.toFixed(1) }}
+    </small>
+  </div>
+</div>
+```
+
   </div>
 </template>
 
@@ -79,9 +106,99 @@ onUnmounted(() => {
   background: #d1d5db;
 }
 
+.coordinate-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  background-image:
+    linear-gradient(rgba(107, 114, 128, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(107, 114, 128, 0.25) 1px, transparent 1px);
+
+  background-size: 10% 10%;
+}
+
+.axis-label {
+  position: absolute;
+  z-index: 20;
+
+  color: #374151;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.x-axis-label {
+  right: 8px;
+  bottom: 5px;
+}
+
+.y-axis-label {
+  top: 5px;
+  left: 8px;
+}
+
+.coordinate-label {
+  position: absolute;
+  z-index: 20;
+
+  color: #6b7280;
+  font-size: 8px;
+}
+
+.x0 {
+  left: 2px;
+  bottom: 2px;
+}
+
+.x25 {
+  left: 25%;
+  bottom: 2px;
+}
+
+.x50 {
+  left: 50%;
+  bottom: 2px;
+}
+
+.x75 {
+  left: 75%;
+  bottom: 2px;
+}
+
+.x100 {
+  right: 2px;
+  bottom: 2px;
+}
+
+.y0 {
+  left: 2px;
+  bottom: 2px;
+}
+
+.y25 {
+  left: 2px;
+  bottom: 25%;
+}
+
+.y50 {
+  left: 2px;
+  top: 50%;
+}
+
+.y75 {
+  left: 2px;
+  top: 25%;
+}
+
+.y100 {
+  left: 2px;
+  top: 2px;
+}
+
 .road {
   position: absolute;
   background: #9ca3af;
+  z-index: 2;
 }
 
 .road-horizontal {
@@ -110,6 +227,8 @@ onUnmounted(() => {
 
 .building {
   position: absolute;
+  z-index: 3;
+
   background: #f9fafb;
   border: 2px solid #d1d5db;
   border-radius: 4px;
@@ -145,23 +264,30 @@ onUnmounted(() => {
 
 .streetlight {
   position: absolute;
+  z-index: 5;
+
   width: 18px;
   height: 18px;
+
   border-radius: 50%;
   background: #374151;
   border: 3px solid #111827;
-  z-index: 5;
 }
 
 .light {
   position: absolute;
+
   width: 70px;
   height: 70px;
+
   top: 50%;
   left: 50%;
+
   transform: translate(-50%, -50%);
+
   border-radius: 50%;
   background: rgba(250, 204, 21, 0.15);
+
   z-index: -1;
 }
 
@@ -194,29 +320,51 @@ onUnmounted(() => {
   position: absolute;
   z-index: 10;
 
-  width: 14px;
-  height: 14px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: #2563eb;
-  font-size: 18px;
+  transform: translate(-50%, -50%);
 }
 
-.pedestrian-one {
-  top: 25%;
-  left: 40%;
+.pedestrian-dot {
+  display: block;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+  background: #2563eb;
+  border: 2px solid white;
 }
 
-.pedestrian-two {
-  top: 55%;
-  left: 60%;
+.pedestrian-info {
+  display: none;
+
+  position: absolute;
+  left: 14px;
+  top: -8px;
+
+  padding: 6px 8px;
+
+  min-width: 90px;
+
+  border-radius: 4px;
+  background: #111827;
+  color: white;
+
+  font-size: 9px;
+  white-space: nowrap;
 }
 
-.pedestrian-three {
-  top: 78%;
-  left: 38%;
+.pedestrian-info strong {
+  display: block;
+  font-size: 10px;
+}
+
+.pedestrian-info small {
+  display: block;
+  margin-top: 2px;
+  color: #d1d5db;
+}
+
+.pedestrian:hover .pedestrian-info {
+  display: block;
 }
 </style>

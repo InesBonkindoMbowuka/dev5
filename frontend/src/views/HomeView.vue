@@ -1,5 +1,127 @@
 <script setup>
-import NeighborhoodMap from '../components/NeighborhoodMap.vue'
+import { ref, onMounted, onUnmounted } from "vue";
+import NeighborhoodMap from "../components/NeighborhoodMap.vue";
+import {
+  startSimulation as apiStartSimulation,
+  stopSimulation as apiStopSimulation,
+  getSimulationStatus,
+} from "../api/simulation";
+import { getDetections } from "../api/detections";
+import { getStreetlights } from "../api/streetlights";
+import { getPedestrians } from "../api/pedestrians";
+import { getSnapshots } from "../api/snapshots";
+
+const simulationRunning = ref(false);
+const detections = ref([]);
+const pedestrians = ref([]);
+const streetlights = ref([]);
+const detectionCount = ref(0);
+const pedestrianCount = ref(0);
+const coveragePercentage = ref(0);
+
+let statusInterval;
+
+async function updateSimulationStatus() {
+  try {
+    const status = await getSimulationStatus();
+
+    simulationRunning.value = status.running;
+  } catch (error) {
+    console.error("Failed to get simulation status:", error);
+  }
+}
+
+async function startSimulation() {
+  try {
+    const data = await apiStartSimulation();
+
+    simulationRunning.value = data.running;
+    detections.value = [];
+    detectionCount.value = 0;
+  } catch (error) {
+    console.error("Failed to start simulation:", error);
+  }
+}
+
+async function stopSimulation() {
+  try {
+    const data = await apiStopSimulation();
+
+    simulationRunning.value = data.running;
+  } catch (error) {
+    console.error("Failed to stop simulation:", error);
+  }
+}
+
+async function toggleSimulation() {
+  if (simulationRunning.value) {
+    await stopSimulation();
+  } else {
+    await startSimulation();
+  }
+}
+
+async function updateDetections() {
+  try {
+    const data = await getDetections();
+
+    detections.value = data;
+  } catch (error) {
+    console.error("Failed to get detections:", error);
+  }
+}
+
+async function updatePedestrians() {
+  try {
+    pedestrians.value = await getPedestrians();
+  } catch (error) {
+    console.error("Failed to get pedestrians:", error);
+  }
+}
+
+async function updateStreetlights() {
+  try {
+    streetlights.value = await getStreetlights();
+  } catch (error) {
+    console.error("Failed to get streetlights:", error);
+  }
+}
+
+async function updateSnapshot() {
+  try {
+    const snapshots = await getSnapshots();
+
+    if (snapshots.length > 0) {
+      const latest = snapshots[snapshots.length - 1];
+
+      pedestrianCount.value = latest.pedestrianCount;
+      detectionCount.value = latest.totalDetectionCount;
+      coveragePercentage.value = latest.coveragePercentage;
+    }
+  } catch (error) {
+    console.error("Failed to get snapshot:", error);
+  }
+}
+
+onMounted(() => {
+  updateSimulationStatus();
+  updateDetections();
+  updatePedestrians();
+  updateStreetlights();
+  updateSnapshot();
+
+  statusInterval = setInterval(() => {
+    updateSimulationStatus();
+    updateDetections();
+    updatePedestrians();
+    updateStreetlights();
+    updateSnapshot();
+  }, 1000);
+});
+
+onUnmounted(() => {
+  clearInterval(statusInterval);
+});
 </script>
 
 <template>
@@ -10,31 +132,37 @@ import NeighborhoodMap from '../components/NeighborhoodMap.vue'
         <h2>Neighborhood Dashboard</h2>
       </div>
 
-      <div class="live-status">
-        <span></span>
-        LIVE
+      <div class="simulation-controls">
+        <button class="simulation-button" @click="toggleSimulation">
+          {{ simulationRunning ? "Stop Simulation" : "Start Simulation" }}
+        </button>
+
+        <div class="live-status" :class="{ inactive: !simulationRunning }">
+          <span></span>
+          {{ simulationRunning ? "LIVE" : "STOPPED" }}
+        </div>
       </div>
     </header>
 
     <section class="stats">
       <div class="stat-card">
         <span>PEDESTRIANS</span>
-        <strong>10</strong>
+        <strong>{{ pedestrians.length }}</strong>
       </div>
 
       <div class="stat-card">
         <span>STREETLIGHTS</span>
-        <strong>5</strong>
+        <strong>{{ streetlights.length }}</strong>
       </div>
 
       <div class="stat-card">
         <span>DETECTIONS</span>
-        <strong>0</strong>
+        <strong>{{ detectionCount }}</strong>
       </div>
 
       <div class="stat-card">
         <span>COVERAGE</span>
-        <strong>13%</strong>
+        <strong>{{ coveragePercentage.toFixed(0) }}%</strong>
       </div>
     </section>
 
@@ -53,26 +181,50 @@ import NeighborhoodMap from '../components/NeighborhoodMap.vue'
           <div class="map-grid">
             <NeighborhoodMap />
           </div>
-
-          <div class="map-message">
-            <strong>Neighborhood Map</strong>
-            <span>Map visualization coming next</span>
-          </div>
         </div>
       </div>
 
       <div class="activity-panel">
         <div class="panel-header">
           <div>
-            <span class="eyebrow">RECENT ACTIVITY</span>
-            <h3>Activity Feed</h3>
+            <span class="eyebrow">INVESTIGATION</span>
+            <h3>People of Interest</h3>
           </div>
+
+          <span class="panel-badge"> {{ pedestrians.length }} PEOPLE </span>
         </div>
 
-        <div class="empty-state">
+        <div v-if="pedestrians.length === 0" class="empty-state">
           <span class="empty-icon">—</span>
-          <strong>No recent detections</strong>
-          <small>Detection events will appear here.</small>
+          <strong>No pedestrians</strong>
+          <small>Start the simulation to investigate.</small>
+        </div>
+
+        <div v-else class="people-list">
+          <div v-for="pedestrian in pedestrians" :key="pedestrian.uid" class="person-card">
+            <div class="person-header">
+              <strong>{{ pedestrian.name }}</strong>
+
+              <span class="person-status"> ACTIVE </span>
+            </div>
+
+            <div class="person-info">
+              <div>
+                <span>POSITION</span>
+                <strong>
+                  X {{ Math.round(pedestrian.position.x) }}, Y
+                  {{ Math.round(pedestrian.position.y) }}
+                </strong>
+              </div>
+
+              <div>
+                <span>DISTANCE</span>
+                <strong>
+                  {{ pedestrian.totalDistance?.toFixed(1) || "0.0" }}
+                </strong>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -127,6 +279,36 @@ h2 {
   height: 7px;
   border-radius: 50%;
   background: #22c55e;
+}
+
+.simulation-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.simulation-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #111827;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.simulation-button:hover {
+  background: #1f2937;
+}
+
+.live-status.inactive {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.live-status.inactive span {
+  background: #9ca3af;
 }
 
 .stats {
@@ -190,6 +372,79 @@ h2 {
   color: #6b7280;
   font-size: 9px;
   font-weight: bold;
+}
+
+.people-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 370px;
+  overflow-y: auto;
+}
+
+.person-card {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+}
+
+.person-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.person-header strong {
+  font-size: 12px;
+  color: #111827;
+}
+
+.person-status {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 8px;
+  font-weight: bold;
+}
+
+.person-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.person-info div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.person-info span {
+  color: #9ca3af;
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 0.7px;
+}
+
+.person-info strong {
+  color: #374151;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.coordinates {
+  margin-top: 5px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.tick {
+  margin-top: 3px;
+  color: #9ca3af;
+  font-size: 9px;
 }
 
 .map-placeholder {
