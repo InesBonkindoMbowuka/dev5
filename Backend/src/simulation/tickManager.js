@@ -5,6 +5,7 @@ const coverageEngine = require("./coverageEngine");
 const pedestrianSpawner = require("./pedestrianSpawner");
 const snapshotService = require("./snapshotService");
 const streetlightSpawner = require("./streetlightSpawner");
+const resetService = require("./resetService");
 
 class TickManager {
 	async start() {
@@ -12,11 +13,13 @@ class TickManager {
 			return;
 		}
 
+        await resetService.reset();
 		await pedestrianSpawner.spawnPedestrians();
         await streetlightSpawner.spawnStreetlights();
 
 		simulationState.running = true;
 		simulationState.startTime = new Date();
+        simulationState.currentTick = 0;
 		console.log("Simulation started");
 
 		simulationState.interval = setInterval(async () => {
@@ -28,6 +31,12 @@ class TickManager {
 			await snapshotService.saveSnapshot(simulationState.currentTick, coverage, detectionsCreated);
 
 			console.log(`Tick ${simulationState.currentTick}`);
+
+            if (simulationState.currentTick >= simulationState.maxTicks) {
+                this.stop();
+                console.log("Simulation finished");
+            }
+
 		}, 1000);
 	}
 

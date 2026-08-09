@@ -22,6 +22,15 @@ const movementHistorySchema = new mongoose.Schema({
 			required: true,
 		},
 	},
+	behavior: {
+		type: String,
+		default: "walking",
+	},
+
+	description: {
+		type: String,
+		default: "Walking down the street",
+	},
 
 	timestamp: {
 		type: Date,
