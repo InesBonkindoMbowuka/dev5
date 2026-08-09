@@ -1,3 +1,7 @@
+<script setup>
+import NeighborhoodMap from '../components/NeighborhoodMap.vue'
+</script>
+
 <template>
   <div class="dashboard">
     <header class="topbar">
@@ -46,7 +50,9 @@
         </div>
 
         <div class="map-placeholder">
-          <div class="map-grid"></div>
+          <div class="map-grid">
+            <NeighborhoodMap />
+          </div>
 
           <div class="map-message">
             <strong>Neighborhood Map</strong>

@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const pedestrianRoutes = require("./routes/pedestrianRoutes");
 const streetlightRoutes = require("./routes/streetlightRoutes");
@@ -8,7 +9,7 @@ const snapshotRoutes = require("./routes/snapshotRoutes");
 const movementHistoryRoutes = require("./routes/movementHistoryRoutes");
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/pedestrians", pedestrianRoutes);
