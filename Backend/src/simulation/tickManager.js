@@ -13,13 +13,19 @@ class TickManager {
 			return;
 		}
 
-        await resetService.reset();
+		await resetService.reset();
 		await pedestrianSpawner.spawnPedestrians();
-        await streetlightSpawner.spawnStreetlights();
+		await streetlightSpawner.spawnStreetlights();
 
 		simulationState.running = true;
 		simulationState.startTime = new Date();
-        simulationState.currentTick = 0;
+		simulationState.currentTick = 0;
+		simulationState.phase = "observation";
+		simulationState.accusations = 0;
+		simulationState.wrongAccusations = 0;
+		simulationState.gameOver = false;
+		simulationState.won = false;
+		simulationState.accusedPedestrianUid = null;
 		console.log("Simulation started");
 
 		simulationState.interval = setInterval(async () => {
@@ -32,11 +38,10 @@ class TickManager {
 
 			console.log(`Tick ${simulationState.currentTick}`);
 
-            if (simulationState.currentTick >= simulationState.maxTicks) {
-                this.stop();
-                console.log("Simulation finished");
-            }
-
+			if (simulationState.currentTick >= simulationState.maxTicks) {
+				this.stop();
+				console.log("Simulation finished");
+			}
 		}, 1000);
 	}
 
@@ -48,6 +53,44 @@ class TickManager {
 		simulationState.interval = null;
 
 		console.log("Simulation ended");
+	}
+
+	async restart() {
+		this.stop();
+
+		await resetService.reset();
+
+		await pedestrianSpawner.spawnPedestrians();
+		await streetlightSpawner.spawnStreetlights();
+
+		simulationState.running = true;
+		simulationState.startTime = new Date();
+		simulationState.currentTick = 0;
+
+		simulationState.phase = "observation";
+		simulationState.gameOver = false;
+		simulationState.won = false;
+		simulationState.accusedPedestrianUid = null;
+
+		simulationState.interval = setInterval(async () => {
+			simulationState.currentTick++;
+
+			await movementEngine.movePedestrians();
+
+			const detectionsCreated = await detectionEngine.checkDetections();
+
+			const coverage = await coverageEngine.calculateCoverage();
+
+			await snapshotService.saveSnapshot(simulationState.currentTick, coverage, detectionsCreated);
+
+			if (simulationState.currentTick >= simulationState.maxTicks) {
+				this.stop();
+
+				console.log("Simulation finished");
+			}
+		}, 1000);
+
+		console.log("Simulation restarted");
 	}
 }
 

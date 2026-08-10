@@ -24,6 +24,18 @@ export async function stopSimulation() {
   return response.json()
 }
 
+export async function resetSimulation() {
+  const response = await fetch(`${API_URL}/simulation/reset`, {
+    method: 'POST',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to reset simulation')
+  }
+
+  return response.json()
+}
+
 export async function getSimulationStatus() {
   const response = await fetch(`${API_URL}/simulation/status`)
 
