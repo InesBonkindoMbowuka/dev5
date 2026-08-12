@@ -43,7 +43,6 @@ class SimulationController {
 
     }
 
-
     status(req, res) {
 
         res.json({
