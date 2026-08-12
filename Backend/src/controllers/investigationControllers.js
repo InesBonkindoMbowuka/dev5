@@ -1,5 +1,6 @@
 const Pedestrian = require("../models/Pedestrian");
 const simulationState = require("../simulation/simulationState");
+const tickManager = require("../simulation/tickManager");
 
 class InvestigationController {
 	async accuse(req, res) {
@@ -39,6 +40,10 @@ class InvestigationController {
 			simulationState.won = correct;
 			simulationState.phase = correct ? "won" : "investigating";
 			simulationState.accusedPedestrianUid = pedestrianUid;
+
+			if (correct) {
+				tickManager.stop();
+			}
 
 			res.json({
 				correct,

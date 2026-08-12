@@ -2,13 +2,14 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import PeopleView from "../views/PeopleView.vue";
 import InvestigationView from "@/views/InvestigationView.vue";
+import IntroductionView from "../views/IntroductionView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/",
-      name: "home",
+      path: "/dashboard",
+      name: "dashboard",
       component: HomeView,
     },
     {
@@ -24,7 +25,12 @@ const router = createRouter({
     {
       path: "/investigation",
       component: InvestigationView,
-    }
+    },
+    {
+      path: "/",
+      name: "introduction",
+      component: IntroductionView,
+    },
   ],
 });
 

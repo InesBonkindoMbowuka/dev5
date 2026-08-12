@@ -38,10 +38,7 @@ class TickManager {
 
 			console.log(`Tick ${simulationState.currentTick}`);
 
-			if (simulationState.currentTick >= simulationState.maxTicks) {
-				this.stop();
-				console.log("Simulation finished");
-			}
+			
 		}, 1000);
 	}
 
