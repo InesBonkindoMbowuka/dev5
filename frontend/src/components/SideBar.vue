@@ -11,9 +11,7 @@
 
     <nav class="navigation">
       <RouterLink to="/">Dashboard</RouterLink>
-      <RouterLink to="/map">Neighborhood</RouterLink>
       <RouterLink to="/people">People</RouterLink>
-      <RouterLink to="/detections">Detections</RouterLink>
       <RouterLink to="/investigation">Investigation</RouterLink>
     </nav>
 
