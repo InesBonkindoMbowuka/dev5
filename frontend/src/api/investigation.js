@@ -1,6 +1,10 @@
+import { getUserUid } from "./user";
 const API_URL = "http://localhost:3000/api";
 
 export async function accusePedestrian(pedestrianUid) {
+
+  const userUid = getUserUid();
+
   const response = await fetch(`${API_URL}/investigation/accuse`, {
     method: "POST",
     headers: {
@@ -8,6 +12,7 @@ export async function accusePedestrian(pedestrianUid) {
     },
     body: JSON.stringify({
       pedestrianUid,
+      userUid,
     }),
   });
 

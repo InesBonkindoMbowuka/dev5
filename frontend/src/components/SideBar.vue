@@ -13,6 +13,7 @@
       <RouterLink to="/">Dashboard</RouterLink>
       <RouterLink to="/people">People</RouterLink>
       <RouterLink to="/investigation">Investigation</RouterLink>
+      <RouterLink to="/history">My scores</RouterLink>
     </nav>
 
     <div class="system-status">

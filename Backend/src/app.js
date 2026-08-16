@@ -8,6 +8,7 @@ const simulationRoutes = require("./routes/simulationRoutes");
 const snapshotRoutes = require("./routes/snapshotRoutes");
 const movementHistoryRoutes = require("./routes/movementHistoryRoutes");
 const investigationRoutes = require("./routes/investigationRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 app.use(cors());
@@ -20,5 +21,6 @@ app.use("/api/simulation", simulationRoutes);
 app.use("/api/snapshots", snapshotRoutes);
 app.use("/api/movement-history", movementHistoryRoutes);
 app.use("/api/investigation", investigationRoutes);
+app.use("/api/users", userRoutes);
 
 module.exports = app;

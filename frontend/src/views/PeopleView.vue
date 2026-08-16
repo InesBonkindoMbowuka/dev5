@@ -66,7 +66,6 @@ onUnmounted(() => {
 
         <div class="person-header">
           <strong>{{ pedestrian.name }}</strong>
-          <span v-if="pedestrian.role === 'burglar'"> — BURGLAR</span>
 
           <span class="person-status">
             ACTIVE

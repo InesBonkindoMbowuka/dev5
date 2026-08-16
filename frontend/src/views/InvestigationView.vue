@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { getPedestrians } from "../api/pedestrians";
 import { accusePedestrian } from "../api/investigation";
-import { startSimulation } from "../api/simulation";
+import { startSimulation, resetSimulation } from "../api/simulation";
 
 const pedestrians = ref([]);
 const selectedPedestrian = ref(null);
@@ -50,6 +50,7 @@ function continueInvestigation() {
 
 async function restartSimulation() {
   try {
+    await resetSimulation();
     await startSimulation();
 
     accusationResult.value = null;

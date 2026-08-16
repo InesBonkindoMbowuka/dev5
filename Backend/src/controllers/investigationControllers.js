@@ -1,15 +1,22 @@
 const Pedestrian = require("../models/Pedestrian");
 const simulationState = require("../simulation/simulationState");
 const tickManager = require("../simulation/tickManager");
+const User = require("../models/User");
 
 class InvestigationController {
 	async accuse(req, res) {
 		try {
-			const { pedestrianUid } = req.body;
+			const { pedestrianUid, userUid } = req.body;
 
 			if (!pedestrianUid) {
 				return res.status(400).json({
 					error: "Pedestrian UID is required",
+				});
+			}
+
+			if (!userUid) {
+				return res.status(400).json({
+					error: "User UID is required",
 				});
 			}
 
@@ -36,6 +43,22 @@ class InvestigationController {
 			}
 
 			const correct = pedestrian.role === "burglar";
+			const user = await User.findOne({ userUid });
+			
+            if (!user) {
+				return res.status(404).json({
+					error: "User not found",
+				});
+			}
+
+			if (correct) {
+				user.wins += 1;
+			} else {
+				user.wrongGuesses += 1;
+			}
+
+			await user.save();
+
 			simulationState.gameOver = correct;
 			simulationState.won = correct;
 			simulationState.phase = correct ? "won" : "investigating";

@@ -1,5 +1,18 @@
 <script setup>
+import { onMounted } from 'vue'
 import Sidebar from './components/SideBar.vue'
+import { registerUser } from './api/user.js'
+
+onMounted(async () => {
+  try {
+    const user = await registerUser()
+    console.log('User registered:', user)
+  } catch (error) {
+    console.error('Failed to register user:', error)
+  }
+})
+
+
 </script>
 
 <template>
