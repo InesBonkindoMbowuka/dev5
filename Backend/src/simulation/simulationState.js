@@ -11,6 +11,7 @@ const simulationState = {
     gameOver: false,
     won: false,
     accusedPedestrianUid: null,
+    userUid: null,
 };
 
 module.exports = simulationState;
